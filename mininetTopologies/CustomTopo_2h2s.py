@@ -23,7 +23,6 @@ To run this program, on terminal trigger the below command :
 
 """
 
-
 from mininet.topo import Topo
 from mininet.net import Mininet
 from mininet.cli import CLI
