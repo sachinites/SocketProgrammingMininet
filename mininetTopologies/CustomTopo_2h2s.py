@@ -25,6 +25,10 @@ To run this program, on terminal trigger the below command :
 
 
 from mininet.topo import Topo
+from mininet.net import Mininet
+from mininet.cli import CLI
+from mininet.util import dumpNodeConnections
+from mininet.node import OVSController
 
 class MyTopo( Topo ):
     "Simple topology example."
@@ -38,13 +42,22 @@ class MyTopo( Topo ):
         # Add hosts and switches
         h1 = self.addHost( 'h1' )
         h2 = self.addHost( 'h2' )
-        s1 = self.addSwitch( 's3' )
-        s2 = self.addSwitch( 's4' )
+        s1 = self.addSwitch( 's1' )
+        s2 = self.addSwitch( 's2' )
 
         # Add links
         self.addLink( h1, s1 )
         self.addLink( s1, s2 )
         self.addLink( s2, h2 )
 
-MyTopo()
+customTopo = MyTopo()
+net = Mininet(topo=customTopo)
+#c0 = net.addController(name='c0')
+net.start()
+print "Dumping host connections"
+dumpNodeConnections(net.hosts)
+print "Testing network connectivity"
+net.pingAll()
+CLI(net)
+net.stop()
 
