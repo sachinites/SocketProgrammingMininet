@@ -9,7 +9,7 @@ topology enables one to pass in '--topo=mytopo' from the command line.
 
 To run this program, on terminal trigger the below command :
     
-    sudo mn --custom CustomTopo_2h2s.py  --test pingall
+    sudo python CustomTopo_2h2s.py
 
 """
 
@@ -28,8 +28,8 @@ from mininet.topo import Topo
 from mininet.net import Mininet
 from mininet.cli import CLI
 from mininet.util import dumpNodeConnections
-from mininet.node import OVSController
 
+#Topology Description here
 class MyTopo( Topo ):
     "Simple topology example."
 
@@ -50,14 +50,27 @@ class MyTopo( Topo ):
         self.addLink( s1, s2 )
         self.addLink( s2, h2 )
 
+# Execution of Program starts here
+
+#Create the Topology Object
 customTopo = MyTopo()
+
+#Get handle to net to manage your topology
 net = Mininet(topo=customTopo)
-#c0 = net.addController(name='c0')
+
+#start/deploy the Topology
 net.start()
+
 print "Dumping host connections"
 dumpNodeConnections(net.hosts)
+
 print "Testing network connectivity"
 net.pingAll()
+
+#Get Halt at Mininet CLI prompt
 CLI(net)
+
+#Destroy and stop the topology
 net.stop()
 
+# program ends here
