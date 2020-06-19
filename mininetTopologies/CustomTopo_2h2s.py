@@ -40,6 +40,7 @@ class MyTopo( Topo ):
 
         # Add hosts and switches
         h1 = self.addHost( 'h1' )
+	h1.cmd('sysctl net.ipv4.ip_forward=1')
         h2 = self.addHost( 'h2' )
         s1 = self.addSwitch( 's1' )
         s2 = self.addSwitch( 's2' )
