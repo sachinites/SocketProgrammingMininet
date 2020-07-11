@@ -87,6 +87,29 @@ if '__main__' == __name__:
     # Remove default IP addresses from Router's Interface
     r.cmd("ifconfig r-eth0 0")
 
+    # Enable IP Forwarding on Router r
+    r.cmd("echo 1 > /proc/sys/net/ipv4/ip_forward")
+
+    # Assign Node IP address (also called loopback addr) to L3 device
+    r.cmd('ifconfig lo 122.1.1.122 netmask 255.255.255.255')
+    
+    # Assign IP Address to Hosts as ususal
+    h1.cmd("ifconfig h1-eth0 10.0.10.1 netmask 255.255.255.0")
+    h1.cmd('ifconfig lo 122.1.1.1 netmask 255.255.255.255')
+    h2.cmd("ifconfig h2-eth0 10.0.10.2 netmask 255.255.255.0")
+    h2.cmd('ifconfig lo 122.1.1.2 netmask 255.255.255.255')
+    h3.cmd("ifconfig h3-eth0 10.0.20.1 netmask 255.255.255.0")
+    h3.cmd('ifconfig lo 122.1.1.3 netmask 255.255.255.255')
+    h4.cmd("ifconfig h4-eth0 10.0.20.2 netmask 255.255.255.0")
+    h4.cmd('ifconfig lo 122.1.1.4 netmask 255.255.255.255')
+    
+    
+    
+    # Inter-Vlan Routing Configuration Starts here
+    
+    
+    
+    
     # s5-eth4 interface of switch s5 is connected to L3 router r.
     # Therefore for Inter-Vlan routing, s5-eth4 interface need to 
     # operate in Trunk mode in vlan 10 and 20. This is achieved by
@@ -111,6 +134,8 @@ if '__main__' == __name__:
     # r-eth0 viz r-eth0.10 and r-eth0.20
     r.cmd("vconfig add r-eth0 10") # Create a Virtual LAN Interface r-eth0.10 and mark it as Trunk
     r.cmd("vconfig add r-eth0 20") # Create a Virtual LAN Interface r-eth0.20 and mark it as Trunk
+    r.cmd("ifconfig r-eth0.10 up");
+    r.cmd("ifconfig r-eth0.20 up");
 
     # Create a vlan 10 on Switch s5
     # Note to use brctl, you must have bridge-utils pkg installed.
@@ -137,37 +162,20 @@ if '__main__' == __name__:
     s5.cmd("ifconfig vlan10 up")
     s5.cmd("ifconfig vlan20 up")
     
-    # Enable IP Forwarding on Router r
-    r.cmd("echo 1 > /proc/sys/net/ipv4/ip_forward")
-
     # Assign IP Address to Virtual LAN Interfaces on Router. By assigning
     # IP address, r-eth0.10 becomes SVI (Switch Virtual Interface)
     r.cmd("ifconfig r-eth0.10 10.0.10.254 netmask 255.255.255.0")
     r.cmd("ifconfig r-eth0.20 10.0.20.254 netmask 255.255.255.0")
-    # Assign Node IP address (also called loopback addr) to L3 device
-    r.cmd('ifconfig lo 122.1.1.122 netmask 255.255.255.255')
-    
-    # Assign IP Address to Hosts as ususal
-    h1.cmd("ifconfig h1-eth0 10.0.10.1 netmask 255.255.255.0")
-    h1.cmd('ifconfig lo 122.1.1.1 netmask 255.255.255.255')
-    h2.cmd("ifconfig h2-eth0 10.0.10.2 netmask 255.255.255.0")
-    h2.cmd('ifconfig lo 122.1.1.2 netmask 255.255.255.255')
-    h3.cmd("ifconfig h3-eth0 10.0.20.1 netmask 255.255.255.0")
-    h3.cmd('ifconfig lo 122.1.1.3 netmask 255.255.255.255')
-    h4.cmd("ifconfig h4-eth0 10.0.20.2 netmask 255.255.255.0")
-    h4.cmd('ifconfig lo 122.1.1.4 netmask 255.255.255.255')
 
     # Lets us add actual L3 route to h1 instead of default. We have
     # commented out the default route entry for h1
     h1.cmd("ip route add to 10.0.20.0/24 via 10.0.10.254 dev h1-eth0")
-
     #h1.cmd("ip route add default via 10.0.10.254 dev h1-eth0")
     
     h2.cmd("ip route add to 10.0.20.0/24 via 10.0.10.254 dev h2-eth0")
-    h2.cmd("ip route add default via 10.0.10.254 dev h2-eth0")
 
-    h3.cmd("ip route add default via 10.0.20.254 dev h3-eth0")
-    h4.cmd("ip route add default via 10.0.20.254 dev h4-eth0")
+    h3.cmd("ip route add to 10.0.10.0/24 via 10.0.20.254 dev h3-eth0")
+    h4.cmd("ip route add to 10.0.10.0/24 via 10.0.20.254 dev h4-eth0")
 
     # Tell Each L3 device in the Topology (All hosts + L3 Router)
     # to how to reach every other L3 device in the topology through 

@@ -4,7 +4,6 @@
 from mininet.net import Mininet
 from mininet.cli import CLI
 from mininet.link import Link
-from mininet.node import DefaultController
 
 if '__main__' == __name__:
 
@@ -36,8 +35,8 @@ if '__main__' == __name__:
     h2.cmd("ifconfig h2-eth0 13.1.1.2 netmask 255.255.255.0")
 
     # Default Route in hosts
-    h1.cmd("ip route add default via 10.1.1.254 dev h1-eth0")
-    h2.cmd("ip route add default via 13.1.1.254 dev h2-eth0")
+    h1.cmd("ip route add default via 10.1.1.2 dev h1-eth0")
+    h2.cmd("ip route add default via 13.1.1.1 dev h2-eth0")
 
     # config loop back addresses of hosts
     h1.cmd("ifconfig lo 122.1.1.4 netmask 255.255.255.255")
